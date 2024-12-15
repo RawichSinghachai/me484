@@ -1,16 +1,17 @@
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import QCoreApplication, Qt , QSize, pyqtSignal,QDate,QTimer
+from PyQt6.QtCore import QCoreApplication, Qt , QSize, pyqtSignal,QDate,QTimer,QThread
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, \
     QHBoxLayout, QGridLayout, QLineEdit, QMessageBox, QGroupBox, QSpacerItem, QStackedWidget,QMainWindow ,QSlider
 from PyQt6.QtGui import QIcon,QImage
 from PyQt6.QtGui import QMouseEvent
 from time import sleep
+# from gpiozero import Button
 
 from arm_robot_movement import inverse_kinematics, plot_robot_arm
 # debug mode
-from servo import (configure_servo, move_servo_smoothly, forward_servo360, backward_servo360, stop_servo360, move_servo_linear,stop_servo_at_angle)
+# from servo import (configure_servo, move_servo_smoothly, forward_servo360, backward_servo360, stop_servo360)
 
-class MainWindow(QMainWindow):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -23,6 +24,11 @@ class MainWindow(QMainWindow):
         self.theta2_des = 0 
         self.theta3_des = 0 
         self.theta4_des = 0 
+
+        self.button_26_state = False
+        self.button_26_state = False
+
+        self.running = False
 
         self.setWindowTitle("QSlider with Value Display")
         self.setFixedSize(QSize(800, 400))
@@ -61,6 +67,13 @@ class MainWindow(QMainWindow):
         # configure_servo(1)
         # configure_servo(2)
         # configure_servo(3)
+
+        # button_26 = Button(26, pull_up=True, bounce_time=0.01)  # Reduce debounce time to 10ms
+        # button_27 = Button(27, pull_up=True, bounce_time=0.01)  # Reduce debounce time to 10ms
+
+        # self.button_26_state = button_26.is_pressed  
+        # self.button_27_state = button_27.is_pressed
+
 
 
 # ----------------------- top components ---------------------------------------------
@@ -253,9 +266,7 @@ class MainWindow(QMainWindow):
 
 
 # -------------------------------------------------------------------------------------------------------------
-        container = QWidget()
-        container.setLayout(self.layout)
-        self.setCentralWidget(container)
+
 
 # -------------------------- Method ----------------------------------------------------------------
 
@@ -288,17 +299,22 @@ class MainWindow(QMainWindow):
     def on_button_start_control_mode(self):
         # for debug mode hide
 
-        move_servo_smoothly(0,0,self.theta1,10,0.1)
+        move_servo_smoothly(0,0,self.theta1,10,0.1,self.running)
         sleep(1)
-        move_servo_smoothly(1,0,self.theta2,10,0.1)
+        move_servo_smoothly(1,0,self.theta2,10,0.1,self.running)
         sleep(1)
-        move_servo_smoothly(2,0,self.theta3,10,0.1)
+        move_servo_smoothly(2,0,self.theta3,10,0.1,self.running)
         sleep(1)
-        move_servo_linear()
-        sleep(1)
-        move_servo_smoothly(2,0,self.theta4,10,0.1)
-      
-        
+        if not self.button_22_state and self.button_26_state :
+             backward_servo360(4)
+        elif not self.button_26_state and self.button_22_state :
+             forward_servo360(4)
+        elif self.button_26_state or self.running:
+             stop_servo360(4)
+        elif self.button_22_state or self.running:
+             stop_servo360(4)
+             sleep(2)
+             move_servo_smoothly(2,0,self.theta4,10,0.1,self.running)
 
 
 #       when click calutation button
@@ -324,16 +340,24 @@ class MainWindow(QMainWindow):
         # when press button confirm mode calculate
 
         # for debug mode hide
-        move_servo_smoothly(0,0,self.theta1,10,0.1)
+
+        move_servo_smoothly(0,0,self.theta1,10,0.1,self.running)
         sleep(1)
-        move_servo_smoothly(1,0,self.theta2,10,0.1)
+        move_servo_smoothly(1,0,self.theta2,10,0.1,self.running)
         sleep(1)
-        move_servo_smoothly(2,0,self.theta3,10,0.1)
+        move_servo_smoothly(2,0,self.theta3,10,0.1,self.running)
         sleep(1)
-        move_servo_linear()
-        sleep(1)
-        move_servo_smoothly(2,0,self.theta4,10,0.1)
-      
+        if not self.button_22_state and self.button_26_state :
+             backward_servo360(4)
+        elif not self.button_26_state and self.button_22_state :
+             forward_servo360(4)
+        elif self.button_26_state or self.running:
+             stop_servo360(4)
+        elif self.button_22_state or self.running:
+             stop_servo360(4)
+             sleep(2)
+             move_servo_smoothly(2,0,self.theta4,10,0.1,self.running)
+        print("confirm calculate")
     
 #       when click calulate button endpoint
     def on_button_start_endpoint(self):
@@ -361,14 +385,29 @@ class MainWindow(QMainWindow):
     def on_button_emergency(self):
         pass
     def on_button_reset(self):
-        pass
-    def button_reset(self):
-        pass
+        # for debug mode hide
+
+        move_servo_smoothly(0,self.theta1,0,10,0.1,self.running)
+        sleep(1)
+        move_servo_smoothly(1,self.theta2,0,10,0.1,self.running)
+        sleep(1)
+        move_servo_smoothly(2,self.theta3,0,10,0.1,self.running)
+        sleep(1)
+        if not self.button_22_state and self.button_26_state :
+             backward_servo360(4)
+        elif not self.button_26_state and self.button_22_state :
+             forward_servo360(4)
+        elif self.button_26_state or self.running:
+             stop_servo360(4)
+        elif self.button_22_state or self.running:
+             stop_servo360(4)
+             sleep(2)
+             move_servo_smoothly(2,self.theta4,0,10,0.1,self.running)
+        print("Reset")
 
 
 if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
+    app = QApplication([])
     window = MainWindow()
     window.show()
-    sys.exit(app.exec())
+    app.exec()
