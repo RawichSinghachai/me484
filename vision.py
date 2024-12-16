@@ -1,28 +1,15 @@
 import cv2
 import numpy as np
 
+clicked_pos = None
 
+def get_color(event, x, y, flags, param):
+    global clicked_pos
+    if event == cv2.EVENT_LBUTTONDOWN:  # Check if left mouse button is clicked
+        clicked_pos = (x, y)  # Update the position of the last click
 
-
-# def hsv_color(h, s, v):
-#     h = round(h / 2)
-#     s = round((s * 255) / 100)
-#     v = round((v * 255) / 100)
-#     return h, s, v
-
-
-
-
-def open_camera():
-
-    clicked_pos = None
-
-    def get_color(event, x, y, flags, param):
-        global clicked_pos
-        if event == cv2.EVENT_LBUTTONDOWN:  # Check if left mouse button is clicked
-            clicked_pos = (x, y)  # Update the position of the last click
-
-
+def main():
+    global clicked_pos
     # Open the webcam
     cap = cv2.VideoCapture(0)  # Use 0 for the default camera
 
@@ -151,3 +138,6 @@ def open_camera():
     # Release the webcam and close all OpenCV windows
     cap.release()
     cv2.destroyAllWindows()
+
+# if __name__ == '__main__':
+#     main()
