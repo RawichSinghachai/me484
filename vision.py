@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 
-
 clicked_pos = None
 
 
@@ -13,26 +12,9 @@ def hsv_color(h, s, v):
 
 
 def get_color(event, x, y, flags, param):
-    if event == cv2.EVENT_RBUTTONDOWN:  # Right mouse button click
-        # Read the pixel value at the clicked position in the HSV frame
-        hsv_color = hsv[y, x]
-        h, s, v = hsv_color
-        print(f"HSV Color: H={h}, S={s}, V={v}")
-
-        # Display the selected color in the color box
-        color_box[:] = cv2.cvtColor(np.uint8([[[h, s, v]]]), cv2.COLOR_HSV2BGR)
-        # Show the selected color in a new window with the HSV values
-        color_with_text = color_box.copy()
-        text = f"H={h}, S={s}, V={v}"
-        cv2.putText(color_with_text, text, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-        cv2.imshow("Selected Color", color_with_text)
-
-    elif event == cv2.EVENT_LBUTTONDOWN:  # Check if left mouse button is clicked
-        global clicked_pos  # ใช้ตัวแปรนี้เพื่อบันทึกตำแหน่ง
+    global clicked_pos
+    if event == cv2.EVENT_LBUTTONDOWN:  # Check if left mouse button is clicked
         clicked_pos = (x, y)  # Update the position of the last click
-
-
-
 
 
 # Open the webcam
@@ -48,11 +30,11 @@ if not cap.isOpened():
 # Create a window to display the image
 cv2.namedWindow('Color Detection')
 cv2.setMouseCallback("Color Detection", get_color)
+
 # Set the desired window size
 window_width = 640  # Desired width
 window_height = 480  # Desired height
 cv2.resizeWindow('Color Detection', window_width, window_height)
-
 
 # Callback function for the trackbars (does nothing, required by OpenCV)
 def nothing(x):
@@ -67,9 +49,7 @@ cv2.createTrackbar('Upper H', 'Color Detection', 100, 180, nothing)
 cv2.createTrackbar('Upper S', 'Color Detection', 100, 255, nothing)
 cv2.createTrackbar('Upper V', 'Color Detection', 100, 255, nothing)
 
-# Create a box to display the selected color
-color_box = np.zeros((100, 200, 3), dtype=np.uint8)
-
+# Main loop
 while True:
     # Capture a frame from the webcam
     ret, frame = cap.read()
@@ -82,7 +62,7 @@ while True:
         x, y = clicked_pos
         pixel_text = f"Pos: ({x}, {y})"
         cv2.putText(frame, pixel_text, (x + 10, y - 10),
-        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1, cv2.LINE_AA)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1, cv2.LINE_AA)
 
     # Get the current positions of all trackbars
     lower_h = cv2.getTrackbarPos('Lower H', 'Color Detection')
@@ -140,10 +120,26 @@ while True:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
     # Show the original frame with contours and shapes
-    cv2.imshow('Color Detection', result)#result
+    cv2.imshow('Color Detection', result)
+
+    # Handle the key press event for "i"
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('i') and clicked_pos:  # Press "i" to get the HSV value
+        x, y = clicked_pos
+        hsv_color_value = hsv[y, x]
+        h, s, v = hsv_color_value
+        print(f"HSV Color: H={h}, S={s}, V={v}")
+
+        # Display the selected color in the color box
+        color_box[:] = cv2.cvtColor(np.uint8([[[h, s, v]]]), cv2.COLOR_HSV2BGR)
+        # Show the selected color in a new window with the HSV values
+        color_with_text = color_box.copy()
+        text = f"H={h}, S={s}, V={v}"
+        cv2.putText(color_with_text, text, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.imshow("Selected Color", color_with_text)
 
     # Exit the loop when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if key == ord('q'):
         break
 
 # Release the webcam and close all OpenCV windows
