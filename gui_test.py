@@ -265,6 +265,10 @@ class MainWindow(QWidget):
         self.button_reset.clicked.connect(self.on_button_reset)  # Connect button click signal to a slot
         self.hBox_bottom.addWidget(self.button_reset)
 
+        self.button_webcam = QPushButton("OpenWebCam")
+        self.button_webcam.clicked.connect(self.on_button_webcam)  # Connect button click signal to a slot
+        self.hBox_bottom.addWidget(self.button_webcam)
+
 
 
 # -------------------------------------------------------------------------------------------------------------
@@ -477,6 +481,10 @@ class MainWindow(QWidget):
                    break
         sleep(0.1)
               
+    def on_button_webcam(self):
+    # This will start the webcam when the button is clicked
+        from vision import open_camera  # Import the main function from vision.py
+        open_camera()  # Call the main function to open the webcam
 
 
 if __name__ == "__main__":
