@@ -5,11 +5,11 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLay
 from PyQt6.QtGui import QIcon,QImage
 from PyQt6.QtGui import QMouseEvent
 from time import sleep
-# from gpiozero import Button
+from gpiozero import Button
 
 from arm_robot_movement import inverse_kinematics, plot_robot_arm
-# debug mode
-# from servo import (configure_servo, move_servo_smoothly, forward_servo360, backward_servo360, stop_servo360)
+
+from servo import (configure_servo, move_servo_smoothly, forward_servo360, backward_servo360, stop_servo360)
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -26,9 +26,7 @@ class MainWindow(QWidget):
         self.theta4_des = 0 
 
         self.button_26_state = False
-        self.button_26_state = False
-
-        self.running = False
+        self.button_27_state = False
 
         self.setWindowTitle("QSlider with Value Display")
         self.setFixedSize(QSize(800, 400))
@@ -62,17 +60,21 @@ class MainWindow(QWidget):
         self.hBox_top.addLayout(self.vBox3)
 
 # ----------------------- Configure -------------------------------------------------
-        # debug mode
-        # configure_servo(0)
-        # configure_servo(1)
-        # configure_servo(2)
-        # configure_servo(3)
+        
+        configure_servo(0)
+        configure_servo(1)
+        configure_servo(2)
+        configure_servo(4)
 
-        # button_26 = Button(26, pull_up=True, bounce_time=0.01)  # Reduce debounce time to 10ms
-        # button_27 = Button(27, pull_up=True, bounce_time=0.01)  # Reduce debounce time to 10ms
+        self.button_6 = Button(6, pull_up=True, bounce_time=0.01)  # Reduce debounce time to 10ms
+        self.button_5 = Button(5, pull_up=True, bounce_time=0.01)  # Reduce debounce time to 10ms
 
-        # self.button_26_state = button_26.is_pressed  
-        # self.button_27_state = button_27.is_pressed
+        self.button_6_state = self.button_6.is_pressed  
+        self.button_5_state = self.button_5.is_pressed
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_status)
+        self.timer.start(50)
 
 
 
@@ -145,11 +147,11 @@ class MainWindow(QWidget):
 
         # Create a button
         self.button_servo5_up = QPushButton("UP")
-        self.button_servo5_up.clicked.connect(self.up_button_servo5_click)  # Connect button click signal to a slot
+        self.button_servo5_up.clicked.connect(self.on_button_up)  # Connect button click signal to a slot
         self.hBox_button_servo5.addWidget(self.button_servo5_up)
 
         self.button_servo5_down = QPushButton("DOWN")
-        self.button_servo5_down.clicked.connect(self.down_button_servo5_click)  # Connect button click signal to a slot
+        self.button_servo5_down.clicked.connect(self.on_button_down)  # Connect button click signal to a slot
         self.hBox_button_servo5.addWidget(self.button_servo5_down)
 
         self.button_servo5_stop = QPushButton("STOP")
@@ -299,22 +301,40 @@ class MainWindow(QWidget):
     def on_button_start_control_mode(self):
         # for debug mode hide
 
-        move_servo_smoothly(0,0,self.theta1,10,0.1,self.running)
+        move_servo_smoothly(0,0,self.theta1,10,0.1)
         sleep(1)
-        move_servo_smoothly(1,0,self.theta2,10,0.1,self.running)
+        move_servo_smoothly(1,0,self.theta2,10,0.1)
         sleep(1)
-        move_servo_smoothly(2,0,self.theta3,10,0.1,self.running)
+        move_servo_smoothly(2,0,self.theta3,10,0.1)
         sleep(1)
-        if not self.button_22_state and self.button_26_state :
-             backward_servo360(4)
-        elif not self.button_26_state and self.button_22_state :
-             forward_servo360(4)
-        elif self.button_26_state or self.running:
-             stop_servo360(4)
-        elif self.button_22_state or self.running:
-             stop_servo360(4)
-             sleep(2)
-             move_servo_smoothly(2,0,self.theta4,10,0.1,self.running)
+        
+        while True:
+             button_5_state = self.button_5.is_pressed
+
+             backward_servo360(3)
+             print("backward")
+
+             if button_5_state:
+                  stop_servo360(3)
+                  print("Stop")
+                  break
+             sleep(0.1)
+
+        sleep(2)
+        move_servo_smoothly(4,0,self.theta4,10,0.1)
+        sleep(2)
+
+        while True:
+             button_6_state = self.button_6.is_pressed
+
+             forward_servo360(3)
+             print("forward")
+
+             if button_6_state:
+                  stop_servo360(3)
+                  print("Stop")
+                  break
+             sleep(0.1)
 
 
 #       when click calutation button
@@ -341,22 +361,41 @@ class MainWindow(QWidget):
 
         # for debug mode hide
 
-        move_servo_smoothly(0,0,self.theta1,10,0.1,self.running)
+        move_servo_smoothly(0,0,self.theta1,10,0.1)
         sleep(1)
-        move_servo_smoothly(1,0,self.theta2,10,0.1,self.running)
+        move_servo_smoothly(1,0,self.theta2,10,0.1)
         sleep(1)
-        move_servo_smoothly(2,0,self.theta3,10,0.1,self.running)
+        move_servo_smoothly(2,0,self.theta3,10,0.1)
         sleep(1)
-        if not self.button_22_state and self.button_26_state :
-             backward_servo360(4)
-        elif not self.button_26_state and self.button_22_state :
-             forward_servo360(4)
-        elif self.button_26_state or self.running:
-             stop_servo360(4)
-        elif self.button_22_state or self.running:
-             stop_servo360(4)
-             sleep(2)
-             move_servo_smoothly(2,0,self.theta4,10,0.1,self.running)
+
+        while True:
+             button_5_state = self.button_5.is_pressed
+
+             backward_servo360(3)
+             print("backward")
+
+             if button_5_state:
+                  stop_servo360(3)
+                  print("Stop")
+                  break
+             sleep(0.1)
+
+        sleep(2)
+        move_servo_smoothly(4,0,self.theta4,10,0.1)
+        sleep(2)
+
+        while True:
+             button_6_state = self.button_6.is_pressed
+
+             forward_servo360(3)
+             print("forward")
+
+             if button_6_state:
+                  stop_servo360(3)
+                  print("Stop")
+                  break
+             sleep(0.1)
+
         print("confirm calculate")
     
 #       when click calulate button endpoint
@@ -387,23 +426,57 @@ class MainWindow(QWidget):
     def on_button_reset(self):
         # for debug mode hide
 
-        move_servo_smoothly(0,self.theta1,0,10,0.1,self.running)
+        move_servo_smoothly(0,self.theta1,0,10,0.1)
         sleep(1)
-        move_servo_smoothly(1,self.theta2,0,10,0.1,self.running)
+        move_servo_smoothly(1,self.theta2,0,10,0.1)
         sleep(1)
-        move_servo_smoothly(2,self.theta3,0,10,0.1,self.running)
+        move_servo_smoothly(2,self.theta3,0,10,0.1)
         sleep(1)
-        if not self.button_22_state and self.button_26_state :
-             backward_servo360(4)
-        elif not self.button_26_state and self.button_22_state :
-             forward_servo360(4)
-        elif self.button_26_state or self.running:
-             stop_servo360(4)
-        elif self.button_22_state or self.running:
-             stop_servo360(4)
-             sleep(2)
-             move_servo_smoothly(2,self.theta4,0,10,0.1,self.running)
+        while True:
+             button_6_state = self.button_6.ispressed
+
+             forward_servo360(3)
+             print("forward")
+
+             if button_6_state:
+                  stop_servo360(3)
+                  print("Stop")
+                  break
+             sleep(0.1)
+        sleep(1)
+        move_servo_smoothly(4,self.theta4,0,10,0.1)
         print("Reset")
+
+#     def updata_status(self):
+#          self.button_5_state = button_5.is_pressed
+#          self.button_6_state = button_6.is_pressed
+
+    def on_button_up(self):
+        while True:
+              button_6_state = self.button_6.is_pressed
+
+              forward_servo360(3)
+              print("forward")
+
+              if button_6_state:
+                   stop_servo360(3)
+                   print("Stop")
+                   break
+        sleep(0.1)
+
+    def on_button_down(self):
+        while True:
+              button_5_state = self.button_5.is_pressed
+
+              backward_servo360(3)
+              print("backward")
+
+              if button_5_state:
+                   stop_servo360(3)
+                   print("Stop")
+                   break
+        sleep(0.1)
+              
 
 
 if __name__ == "__main__":
