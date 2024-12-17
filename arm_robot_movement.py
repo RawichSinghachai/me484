@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def inverse_kinematics(x, y, l1=10, l2=5):
+def inverse_kinematics(x, y, l1=18, l2=17):
     # Calculate joint angles using inverse kinematics
     r = np.sqrt(x**2 + y**2)
     try:
@@ -10,11 +10,7 @@ def inverse_kinematics(x, y, l1=10, l2=5):
 
         theta1 = np.degrees(theta1)
         theta3 = np.degrees(theta3)
-
-        if theta1 > 270:
-            theta2 = theta1 - 270
-        else:
-            theta2 = 0
+        theta2 = 0
 
         if np.isnan(theta1) or np.isnan(theta3):
             raise ValueError("Computed angles resulted in NaN")
@@ -25,15 +21,17 @@ def inverse_kinematics(x, y, l1=10, l2=5):
 
     return theta1, theta2, theta3 # Results in degrees
 
-def forward_kinematics(theta1, theta3, l1=10, l2=5):
+def forward_kinematics(theta1, theta3, l1=18, l2=17):
     # Calculate end effector position using forward kinematics
     x = l1 * np.cos(np.radians(theta1)) + l2 * np.cos(np.radians(theta1 + theta3))
     y = l1 * np.sin(np.radians(theta1)) + l2 * np.sin(np.radians(theta1 + theta3))
     return x, y
 
-def plot_robot_arm(target_x, target_y, l1=10, l2=5):
+def plot_robot_arm(target_x, target_y, l1=18, l2=17):
     # Calculate joint angles
+    # theta1, theta2, theta3 = inverse_kinematics(target_x, target_y, l1, l2)
     theta1, _, theta3 = inverse_kinematics(target_x, target_y, l1, l2)
+    print(f"theta1 : {theta1} ,theta2 : {0} ,theta3 : {theta3} , ")
 
     # Calculate positions for plotting
     x0, y0 = 0, 0  # Base position
@@ -63,3 +61,4 @@ def plot_robot_arm(target_x, target_y, l1=10, l2=5):
     print(f"End effector position: ({x2:.2f}, {y2:.2f})")
 
     plt.show()
+#plot_robot_arm(14,12)

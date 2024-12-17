@@ -19,20 +19,14 @@ def configure_servo(servo_pin, angle=270, min_pulse=500, max_pulse=2500):
     kit.servo[servo_pin].set_pulse_width_range(min_pulse, max_pulse)
 
 # Function to move a servo smoothly between angles
-def move_servo_smoothly(servo_pin, start_angle, end_angle, step, delay, running_flag):
+def move_servo_smoothly(servo_pin, start_angle, end_angle, step, delay):
     if start_angle < end_angle:
         for angle in np.arange(start_angle, end_angle + 1, step):
-            if not running_flag:  # Check the running flag
-                print(f"Stopped at angle {angle}")
-                return
             kit.servo[servo_pin].angle = angle
             print(f"Servo moved to {angle} degrees")
             sleep(delay)
     else:
         for angle in np.arange(start_angle, end_angle - 1, -step):
-            if not running_flag:  # Check the running flag
-                print(f"Stopped at angle {angle}")
-                return
             kit.servo[servo_pin].angle = angle
             print(f"Servo moved to {angle} degrees")
             sleep(delay)
