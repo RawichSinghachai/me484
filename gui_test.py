@@ -36,17 +36,17 @@ class MainWindow(QWidget):
         # self.layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.layout)
 
-        # Title HBox Top
-        self.hBox_top = QHBoxLayout()
-        self.hBox_top.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.layout.addLayout(self.hBox_top)
+        # HBox Top
+        self.vBox_top = QVBoxLayout()
+        self.vBox_top.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout.addLayout(self.vBox_top)
 
-        # Top Hbox Mid
+        # Hbox Mid
         self.hBox_mid = QHBoxLayout()
         self.hBox_mid.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addLayout(self.hBox_mid)
 
-        # Top Hbox Bottom
+        # Hbox Bottom
         self.hBox_bottom = QHBoxLayout()
         self.hBox_bottom.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addLayout(self.hBox_bottom)
@@ -80,31 +80,35 @@ class MainWindow(QWidget):
 
 # ---------------------- Top components ---------------------------------------------- 
 # ---------------------- Input x,y from camera ---------------------------------------
+        # layout hBox input coordinate
+        self.hBox_input_coordinate_camera = QHBoxLayout()
+        self.vBox_top.addLayout(self.hBox_input_coordinate_camera)
 
         # Create input field
         self.input_x_coordinate_camera = QLineEdit()
         self.input_x_coordinate_camera.setPlaceholderText("coordinate x")  # Placeholder text
-        self.hBox_top.addWidget(self.input_x_coordinate_camera)
+        self.hBox_input_coordinate_camera.addWidget(self.input_x_coordinate_camera)
 
 
         # Create input field
         self.input_y_coordinate_camera = QLineEdit()
         self.input_y_coordinate_camera.setPlaceholderText("coordinate y")  # Placeholder text
-        self.hBox_top.addWidget(self.input_y_coordinate_camera)
+        self.hBox_input_coordinate_camera.addWidget(self.input_y_coordinate_camera)
 
         # Create a button
         self.button_find_coordinate = QPushButton("Find")
         self.button_find_coordinate.clicked.connect(self.on_button_find_coordinate)  # Connect button click signal to a slot
-        self.hBox_top.addWidget(self.button_find_coordinate)
+        self.hBox_input_coordinate_camera.addWidget(self.button_find_coordinate)
 
-        self.vBox_lable_coordinate = QVBoxLayout()
-        self.hBox_top.addLayout(self.vBox_coordinate)
+        self.hBox_lable_coordinate = QHBoxLayout()
+        self.hBox_lable_coordinate.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.vBox_top.addLayout(self.hBox_lable_coordinate)
 
         self.label_x_coordinate = QLabel("x : 0")
-        self.vBox_lable_coordinate.addWidget(self.label_x_coordinate)
+        self.hBox_lable_coordinate.addWidget(self.label_x_coordinate)
 
         self.label_x_coordinate = QLabel("y : 0")
-        self.vBox_lable_coordinate.addWidget(self.label_x_coordinate)
+        self.hBox_lable_coordinate.addWidget(self.label_x_coordinate)
 
 
 
@@ -183,10 +187,6 @@ class MainWindow(QWidget):
         self.button_servo5_down = QPushButton("DOWN")
         self.button_servo5_down.clicked.connect(self.on_button_down)  # Connect button click signal to a slot
         self.hBox_button_servo5.addWidget(self.button_servo5_down)
-
-        self.button_servo5_stop = QPushButton("STOP")
-        self.button_servo5_stop.clicked.connect(self.stop_button_servo5_click)  # Connect button click signal to a slot
-        self.hBox_button_servo5.addWidget(self.button_servo5_stop)
 
 # ---------------------------------- Button Move ----------------------------------
 
@@ -269,7 +269,7 @@ class MainWindow(QWidget):
         # Create input field
         self.input_servo4_gripper_endpoint = QLineEdit()
         self.input_servo4_gripper_endpoint.setPlaceholderText("Servo Griper Endpoint")  # Placeholder text
-        self.vBox2.addWidget(self.input_servo4_gripper_endpoint)
+        self.vBox3.addWidget(self.input_servo4_gripper_endpoint)
 
 # ---------------------------------- Button Destination ---------------------------------------
 
@@ -336,14 +336,6 @@ class MainWindow(QWidget):
         self.label_servo4.setText(f"Servo 4 : {value}")
         self.theta4 = value
 
-    def up_button_servo5_click(self):
-        pass
-    
-    def down_button_servo5_click(self):
-        pass
-    
-    def stop_button_servo5_click(self):
-        pass
     
 #       when click button start
     def on_button_start_control_mode(self):
@@ -396,20 +388,20 @@ class MainWindow(QWidget):
         self.theta1, self.theta2, self.theta3 = inverse_kinematics(x,y)
 
         if self.theta1 == None or self.theta2 == None or self.theta3 == None:
-                self.theta1 = f"{self.theta1}"
-                self.theta2 = f"{self.theta2}"
-                self.theta3 = f"{self.theta3}"
+                self.theta1 = float(f"{self.theta1}")
+                self.theta2 = float(f"{self.theta2}")
+                self.theta3 = float(f"{self.theta3}")
         elif self.theta1 > 270 :
-                self.theta2 = f"{(self.theta1 - 270):.2f}"
+                self.theta2 = float(f"{(self.theta1 - 270):.2f}")
                 plot_robot_arm(x,y)
         elif self.theta1 < 0 :
                 self.theta1 = 270
-                self.theta2 = f"{(90 + self.theta1)}"
+                self.theta2 = float(f"{(90 + self.theta1)}")
                 plot_robot_arm(x,y)
         else:
-                self.theta1 = f"{self.theta1:.2f}"
-                self.theta2 = f"{self.theta2:.2f}"
-                self.theta3 = f"{self.theta3:.2f}"
+                self.theta1 = float(f"{self.theta1:.2f}")
+                self.theta2 = float(f"{self.theta2:.2f}")
+                self.theta3 = float(f"{self.theta3:.2f}")
                 plot_robot_arm(x,y)
                 
 
@@ -422,7 +414,7 @@ class MainWindow(QWidget):
     def on_button_calculate_confirm(self):
         # when press button confirm mode calculate
 
-        self.theta4 = float(self.input_servo4_gripper_calulate.text())
+        self.theta4 = float(self.input_servo4_gripper_calulate.text()) if self.input_servo4_gripper_calulate.text() else 0.0
 
         # for debug mode hide
 
@@ -469,22 +461,25 @@ class MainWindow(QWidget):
         y_endpoint = float(self.input_y_axis_endpoint.text()) if self.input_y_axis_endpoint.text() else 0.0
 
         self.theta1_des, self.theta2_des, self.theta3_des = inverse_kinematics(x_endpoint,y_endpoint)
+        self.theta4_des = float(self.input_servo4_gripper_endpoint.text()) if self.input_servo4_gripper_endpoint.text() else 0.0
+
+        self.theta4 = float(self.input_servo4_gripper_calulate.text()) if self.input_servo4_gripper_calulate.text() else 0.0
 # edit
         if self.theta1_des == None or self.theta2_des == None or self.theta3_des == None:
-                self.theta1_des = f"{self.theta1_des}"
-                self.theta2_des = f"{self.theta2_des}"
-                self.theta3_des = f"{self.theta3_des}"
+                self.theta1_des = float(f"{self.theta1_des}")
+                self.theta2_des = float(f"{self.theta2_des}")
+                self.theta3_des = float(f"{self.theta3_des}")
         elif self.theta1_des > 270 :
-                self.theta2_des = f"{(self.theta1_des - 270):.2f}"
+                self.theta2_des = float(f"{(self.theta1_des - 270):.2f}")
                 plot_robot_arm(x_endpoint,y_endpoint)
         elif self.theta1_des < 0 :
                 self.theta1_des = 270
-                self.theta2_des = f"{(90 + self.theta1_des)}"
+                self.theta2_des = float(f"{(90 + self.theta1_des)}")
                 plot_robot_arm(x_endpoint,y_endpoint)
         else:
-                self.theta1_des = f"{self.theta1_des:.2f}"
-                self.theta2_des = f"{self.theta2_des:.2f}"
-                self.theta3_des = f"{self.theta3_des:.2f}"
+                self.theta1_des = float(f"{self.theta1_des:.2f}")
+                self.theta2_des = float(f"{self.theta2_des:.2f}")
+                self.theta3_des = float(f"{self.theta3_des:.2f}")
                 plot_robot_arm(x_endpoint,y_endpoint)
                 
 
@@ -494,7 +489,7 @@ class MainWindow(QWidget):
 
 
     def on_button_confirm_endpoint(self):
-        self.theta4_des = float(self.input_servo4_gripper_endpoint.text())
+        self.theta4_des = float(self.input_servo4_gripper_endpoint.text()) if self.input_servo4_gripper_endpoint.text() else 0.0
 
         move_servo_smoothly(0,0,self.theta1_des,10,0.1)
         sleep(1)
@@ -537,6 +532,7 @@ class MainWindow(QWidget):
 
     def on_button_emergency(self):
         pass
+    
     def on_button_reset(self):
         # for debug mode hide
 
@@ -558,12 +554,11 @@ class MainWindow(QWidget):
                   break
              sleep(0.1)
         sleep(1)
-        move_servo_smoothly(4,0,max(self.theta4,self.theta4_des),10,0.1)
+
+        move_servo_smoothly(4,max(self.theta4,self.theta4_des),0,10,0.1)
         print("Reset")
 
-#     def updata_status(self):
-#          self.button_5_state = button_5.is_pressed
-#          self.button_6_state = button_6.is_pressed
+
 
     def on_button_up(self):
         while True:
