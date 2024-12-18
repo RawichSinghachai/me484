@@ -27,6 +27,10 @@ def move_servo_smoothly(servo_pin, start_angle, end_angle, step, delay):
             sleep(delay)
     else:
         for angle in np.arange(start_angle, end_angle - 1, -step):
+            if angle < 0 :
+                angle = 0
+                kit.servo[servo_pin].angle = angle
+                break
             kit.servo[servo_pin].angle = angle
             print(f"Servo moved to {angle} degrees")
             sleep(delay)
