@@ -27,8 +27,8 @@ class MainWindow(QWidget):
         self.theta4_des_start = 0 
         self.theta4_des_end = 0 
 
-        self.delay_servo = 0.5
-        self.step = 5
+        self.delay_servo = 0.1
+        self.step = 1
 
         self.button_26_state = False
         self.button_27_state = False
@@ -431,8 +431,8 @@ class MainWindow(QWidget):
         x = float(self.input_x_axis_calculate.text()) if self.input_x_axis_calculate.text() else 0.0
         y = float(self.input_y_axis_calculate.text()) if self.input_y_axis_calculate.text() else 0.0
         print(f" x-axis : {x} and y-axis : {y}")
-
-        self.theta1, self.theta2, self.theta3 = inverse_kinematics(x,y)
+        
+        self.theta1, self.theta2, self.theta3 = inverse_kinematics(x,y+10) # y +10 because center offset 10 cm
 
         if self.theta1 == None or self.theta2 == None or self.theta3 == None:
                 self.theta1 = float(f"{self.theta1}")

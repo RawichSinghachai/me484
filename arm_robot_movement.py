@@ -19,7 +19,7 @@ def inverse_kinematics(x, y, l1=18, l2=17):
         print(f"Error in inverse kinematics: {e}")
         return None, None, None
 
-    return theta1, theta2, theta3  # Results in degrees
+    return theta1, theta2, theta3 # Results in degrees
 
 def forward_kinematics(theta1, theta3, l1=18, l2=17):
     # Calculate end effector position using forward kinematics
@@ -28,21 +28,15 @@ def forward_kinematics(theta1, theta3, l1=18, l2=17):
     return x, y
 
 def plot_robot_arm(target_x, target_y, l1=18, l2=17):
-    # Adjust target position relative to new base
-    base_x, base_y = 0, -10  # New base position
-    adjusted_x, adjusted_y = target_x - base_x, target_y - base_y
-
     # Calculate joint angles
-    theta1, _, theta3 = inverse_kinematics(adjusted_x, adjusted_y, l1, l2)
-    if theta1 is None or theta3 is None:
-        print("Target is out of reach!")
-        return
-    print(f"theta1 : {theta1} ,theta2 : {0} ,theta3 : {theta3}")
+    # theta1, theta2, theta3 = inverse_kinematics(target_x, target_y, l1, l2)
+    theta1, _, theta3 = inverse_kinematics(target_x, target_y, l1, l2)
+    print(f"theta1 : {theta1} ,theta2 : {0} ,theta3 : {theta3} , ")
 
     # Calculate positions for plotting
-    x0, y0 = base_x, base_y  # Base position
-    x1, y1 = x0 + l1 * np.cos(np.radians(theta1)), y0 + l1 * np.sin(np.radians(theta1))  # First joint position
-    x2, y2 = x1 + l2 * np.cos(np.radians(theta1 + theta3)), y1 + l2 * np.sin(np.radians(theta1 + theta3))  # End effector position
+    x0, y0 = 0, 0  # Base position
+    x1, y1 = l1 * np.cos(np.radians(theta1)), l1 * np.sin(np.radians(theta1))  # First joint position
+    x2, y2 = forward_kinematics(theta1, theta3, l1, l2)  # End effector position
 
     # Plotting
     plt.figure(figsize=(4, 4))
@@ -67,6 +61,4 @@ def plot_robot_arm(target_x, target_y, l1=18, l2=17):
     print(f"End effector position: ({x2:.2f}, {y2:.2f})")
 
     plt.show()
-
-# Example call
-# plot_robot_arm(0, 30)  # Target point relative to new base
+#plot_robot_arm(14,12)

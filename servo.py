@@ -23,7 +23,7 @@ def move_servo_smoothly(servo_pin, start_angle, end_angle, step, delay):
     if start_angle < end_angle:
         for angle in np.arange(start_angle, end_angle + 1, step):
             kit.servo[servo_pin].angle = angle
-            print(f"Servo moved to {angle} degrees")
+            print(f"Servo {servo_pin} moved to {angle} degrees")
             sleep(delay)
     else:
         for angle in np.arange(start_angle, end_angle - 1, -step):
@@ -32,5 +32,5 @@ def move_servo_smoothly(servo_pin, start_angle, end_angle, step, delay):
                 kit.servo[servo_pin].angle = angle
                 break
             kit.servo[servo_pin].angle = angle
-            print(f"Servo moved to {angle} degrees")
+            print(f"Servo {servo_pin} moved to {angle} degrees")
             sleep(delay)
