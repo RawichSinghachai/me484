@@ -25,6 +25,8 @@ class MainWindow(QWidget):
         self.theta3_des = 0 
         self.theta4_des = 0 
 
+        self.delay_servo = 0.5
+
         self.button_26_state = False
         self.button_27_state = False
 
@@ -37,9 +39,10 @@ class MainWindow(QWidget):
         self.setLayout(self.layout)
 
         # HBox Top
-        self.vBox_top = QVBoxLayout()
-        self.vBox_top.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.layout.addLayout(self.vBox_top)
+        self.hBox_top = QHBoxLayout()
+        self.hBox_top.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout.addLayout(self.hBox_top)
+
 
         # Hbox Mid
         self.hBox_mid = QHBoxLayout()
@@ -80,36 +83,61 @@ class MainWindow(QWidget):
 
 # ---------------------- Top components ---------------------------------------------- 
 # ---------------------- Input x,y from camera ---------------------------------------
-        # layout hBox input coordinate
-        self.hBox_input_coordinate_camera = QHBoxLayout()
-        self.vBox_top.addLayout(self.hBox_input_coordinate_camera)
+
+        # layout hBox input calibration workspace
+        self.vBox_calibration_workspace = QVBoxLayout()
+        self.hBox_top.addLayout(self.vBox_calibration_workspace)
+
+        # Create input field
+        self.input_calibration_workspace1 = QLineEdit()
+        self.input_calibration_workspace1.setPlaceholderText("coordinate 1")  # Placeholder text
+        self.vBox_calibration_workspace.addWidget(self.input_calibration_workspace1)
+
+        # Create input field
+        self.input_calibration_workspace2 = QLineEdit()
+        self.input_calibration_workspace2.setPlaceholderText("coordinate 2")  # Placeholder text
+        self.vBox_calibration_workspace.addWidget(self.input_calibration_workspace2)
+
+        # Create input field
+        self.input_calibration_workspace3 = QLineEdit()
+        self.input_calibration_workspace3.setPlaceholderText("coordinate 3")  # Placeholder text
+        self.vBox_calibration_workspace.addWidget(self.input_calibration_workspace3)
+
+        # Create input field
+        self.input_calibration_workspace4 = QLineEdit()
+        self.input_calibration_workspace4.setPlaceholderText("coordinate 4")  # Placeholder text
+        self.vBox_calibration_workspace.addWidget(self.input_calibration_workspace4)
+
+
+# ----------------------- layout hBox input coordinate ---------------------------------------------------
+        self.vBox_input_coordinate_camera = QVBoxLayout()
+        self.hBox_top.addLayout(self.vBox_input_coordinate_camera)
 
         # Create input field
         self.input_x_coordinate_camera = QLineEdit()
         self.input_x_coordinate_camera.setPlaceholderText("coordinate x")  # Placeholder text
-        self.hBox_input_coordinate_camera.addWidget(self.input_x_coordinate_camera)
+        self.vBox_input_coordinate_camera.addWidget(self.input_x_coordinate_camera)
 
 
         # Create input field
         self.input_y_coordinate_camera = QLineEdit()
         self.input_y_coordinate_camera.setPlaceholderText("coordinate y")  # Placeholder text
-        self.hBox_input_coordinate_camera.addWidget(self.input_y_coordinate_camera)
+        self.vBox_input_coordinate_camera.addWidget(self.input_y_coordinate_camera)
 
         # Create a button
         self.button_find_coordinate = QPushButton("Find")
         self.button_find_coordinate.clicked.connect(self.on_button_find_coordinate)  # Connect button click signal to a slot
-        self.hBox_input_coordinate_camera.addWidget(self.button_find_coordinate)
+        self.vBox_input_coordinate_camera.addWidget(self.button_find_coordinate)
 
         self.hBox_lable_coordinate = QHBoxLayout()
         self.hBox_lable_coordinate.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.vBox_top.addLayout(self.hBox_lable_coordinate)
+        self.hBox_top.addLayout(self.hBox_lable_coordinate)
 
         self.label_x_coordinate = QLabel("x : 0")
         self.hBox_lable_coordinate.addWidget(self.label_x_coordinate)
 
         self.label_x_coordinate = QLabel("y : 0")
         self.hBox_lable_coordinate.addWidget(self.label_x_coordinate)
-
 
 
 # ----------------------- Mid components ----------------------------------------------
@@ -341,11 +369,11 @@ class MainWindow(QWidget):
     def on_button_start_control_mode(self):
         # for debug mode hide
 
-        move_servo_smoothly(0,0,self.theta1,10,0.1)
+        move_servo_smoothly(0,0,self.theta1,10,self.delay_servo)
         sleep(1)
-        move_servo_smoothly(1,0,self.theta2,10,0.1)
+        move_servo_smoothly(1,0,self.theta2,10,self.delay_servo)
         sleep(1)
-        move_servo_smoothly(2,0,self.theta3,10,0.1)
+        move_servo_smoothly(2,0,self.theta3,10,self.delay_servo)
         sleep(1)
         
         while True:
@@ -361,7 +389,7 @@ class MainWindow(QWidget):
              sleep(0.1)
 
         sleep(2)
-        move_servo_smoothly(4,0,self.theta4,10,0.1)
+        move_servo_smoothly(4,0,self.theta4,10,self.delay_servo)
         sleep(2)
 
         while True:
@@ -418,11 +446,11 @@ class MainWindow(QWidget):
 
         # for debug mode hide
 
-        move_servo_smoothly(0,0,self.theta1,10,0.1)
+        move_servo_smoothly(0,0,self.theta1,10,self.delay_servo)
         sleep(1)
-        move_servo_smoothly(1,0,self.theta2,10,0.1)
+        move_servo_smoothly(1,0,self.theta2,10,self.delay_servo)
         sleep(1)
-        move_servo_smoothly(2,0,self.theta3,10,0.1)
+        move_servo_smoothly(2,0,self.theta3,10,self.delay_servo)
         sleep(1)
 
         while True:
@@ -438,7 +466,7 @@ class MainWindow(QWidget):
              sleep(0.1)
 
         sleep(2)
-        move_servo_smoothly(4,0,self.theta4,10,0.1)
+        move_servo_smoothly(4,0,self.theta4,10,self.delay_servo)
         sleep(2)
 
         while True:
@@ -491,11 +519,11 @@ class MainWindow(QWidget):
     def on_button_confirm_endpoint(self):
         self.theta4_des = float(self.input_servo4_gripper_endpoint.text()) if self.input_servo4_gripper_endpoint.text() else 0.0
 
-        move_servo_smoothly(0,0,self.theta1_des,10,0.1)
+        move_servo_smoothly(0,0,self.theta1_des,10,self.delay_servo)
         sleep(1)
-        move_servo_smoothly(1,0,self.theta2_des,10,0.1)
+        move_servo_smoothly(1,0,self.theta2_des,10,self.delay_servo)
         sleep(1)
-        move_servo_smoothly(2,0,self.theta3_des,10,0.1)
+        move_servo_smoothly(2,0,self.theta3_des,10,self.delay_servo)
         sleep(1)
         
         while True:
@@ -511,7 +539,7 @@ class MainWindow(QWidget):
              sleep(0.1)
 
         sleep(2)
-        move_servo_smoothly(4,0,self.theta4_des,10,0.1)
+        move_servo_smoothly(4,0,self.theta4_des,10,self.delay_servo)
         sleep(2)
 
         while True:
@@ -535,12 +563,20 @@ class MainWindow(QWidget):
     
     def on_button_reset(self):
         # for debug mode hide
+        
 
-        move_servo_smoothly(0,max(self.theta1,self.theta1_des),0,10,0.1)
+        self.step = 5
+        self.step_theta1 = self.step if self.theta1 < 0 else -self.step
+        self.step_theta2 = self.step if self.theta1 < 0 else -self.step
+        self.step_theta3 = self.step if self.theta3 < 0 else -self.step
+        self.step_theta4 = self.step if self.theta4 < 0 else -self.step
+
+
+        move_servo_smoothly(0,max(self.theta1,self.theta1_des),0,self.step_theta1,self.delay_servo)
         sleep(1)
-        move_servo_smoothly(1,max(self.theta2,self.theta2_des),0,10,0.1)
+        move_servo_smoothly(1,max(self.theta2,self.theta2_des),0,self.step_theta2,self.delay_servo)
         sleep(1)
-        move_servo_smoothly(2,max(self.theta3,self.theta3_des),0,10,0.1)
+        move_servo_smoothly(2,max(self.theta3,self.theta3_des),0,self.step_theta3,self.delay_servo)
         sleep(1)
         while True:
              button_5_state = self.button_5.is_pressed
@@ -555,7 +591,7 @@ class MainWindow(QWidget):
              sleep(0.1)
         sleep(1)
 
-        move_servo_smoothly(4,max(self.theta4,self.theta4_des),0,10,0.1)
+        move_servo_smoothly(4,max(self.theta4,self.theta4_des),0,self.step_theta4,self.delay_servo)
         print("Reset")
 
 
